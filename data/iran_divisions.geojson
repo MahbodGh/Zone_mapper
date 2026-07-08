@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "_note": "نمونه کوچک برای تست مکانیزم. فایل کامل تقسیمات کشوری را جایگزین کنید (همین ساختار properties).",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"province": "تهران", "county": "ری", "district": "کهریزک", "village": "قمصر"},
+      "geometry": {"type": "Polygon", "coordinates": [[[51.20,35.45],[51.55,35.45],[51.55,35.62],[51.20,35.62],[51.20,35.45]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"province": "تهران", "county": "تهران", "district": "مرکزی", "village": ""},
+      "geometry": {"type": "Polygon", "coordinates": [[[51.20,35.62],[51.55,35.62],[51.55,35.85],[51.20,35.85],[51.20,35.62]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"province": "فارس", "county": "شیراز", "district": "مرکزی", "village": "قلات"},
+      "geometry": {"type": "Polygon", "coordinates": [[[52.40,29.55],[52.65,29.55],[52.65,29.75],[52.40,29.75],[52.40,29.55]]]}
+    }
+  ]
+}
