@@ -12,6 +12,7 @@ const FORMATS = [
 
 export default function ExportPanel({ selectedCount, onExport, busy }) {
   const { t } = useI18n()
+  const [expanded, setExpanded] = useState(false)   // collapsed by default
   const [formats, setFormats] = useState(new Set(['kml']))
   const [mode, setMode] = useState('separate')
 
@@ -29,8 +30,8 @@ export default function ExportPanel({ selectedCount, onExport, busy }) {
   if (selectedCount > 0 && formats.size === 0) note = t('exportHintNoFormat')
 
   return (
-    <div className="export-panel">
-      <h3>{t('exportTitle')}</h3>
+    <div className={`export-panel ${expanded ? 'expanded' : 'collapsed'}`}>
+      {expanded && (<div className="export-body">
 
       <div className="mode-row">
         <label className="mode-opt">
@@ -60,6 +61,15 @@ export default function ExportPanel({ selectedCount, onExport, busy }) {
       <button className="btn primary full" disabled={selectedCount === 0 || formats.size === 0 || busy}
         onClick={() => onExport([...formats], mode)}>
         {busy ? t('building') : isZip ? `${t('downloadZip')} (${fileCount})` : t('downloadFile')}
+      </button>
+      </div>)}
+
+      <button className="export-toggle" onClick={() => setExpanded((e) => !e)}>
+        <h3>{t('exportTitle')}</h3>
+        <span className="export-badge">
+          {selectedCount > 0 ? selectedCount : ''}
+        </span>
+        <span className={`chev ${expanded ? 'up' : ''}`}>▴</span>
       </button>
     </div>
   )

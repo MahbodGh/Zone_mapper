@@ -58,7 +58,10 @@ export default function ZoneForm({ initial, autoGeo, geometry, areaM2, busy, onS
   }
 
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
+    // NOTE: backdrop click intentionally does NOT close this form — an
+    // accidental click would throw away the polygon the user just drew.
+    // Closing is only via the explicit cancel button.
+    <div className="modal-backdrop">
       <div className="modal wide" onClick={(e) => e.stopPropagation()}>
         <h2>{initial?.id ? t('editZone') : t('newZone')}</h2>
 

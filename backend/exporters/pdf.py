@@ -17,8 +17,17 @@ try:
     import arabic_reshaper
     from bidi.algorithm import get_display
 
+    import re as _re
+    _ARABIC = _re.compile(r"[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]")
+
     def fa(text):
-        return get_display(arabic_reshaper.reshape(str(text)))
+        s = str(text)
+        # Only run reshape+bidi on strings that actually contain Arabic-script
+        # characters. Running bidi on plain numbers reverses the digits
+        # (e.g. "8742" -> "2478"), which corrupted numeric cells in the PDF.
+        if not _ARABIC.search(s):
+            return s
+        return get_display(arabic_reshaper.reshape(s))
 except ImportError:  # pragma: no cover
     def fa(text):
         return str(text)

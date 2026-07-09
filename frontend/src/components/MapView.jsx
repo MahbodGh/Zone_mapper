@@ -36,8 +36,8 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
   const [measuring, setMeasuring] = useState(false)
   const [distance, setDistance] = useState(null)
   const [cursor, setCursor] = useState(null)
-  const [coordSys, setCoordSys] = useState('wgs84')
-  const coordSysRef = useRef('wgs84')
+  const [coordSys, setCoordSys] = useState('latlong')
+  const coordSysRef = useRef('latlong')
   coordSysRef.current = coordSys
 
 
@@ -124,6 +124,17 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
     // live cursor coordinates
     map.on('mousemove', (e) => setCursor({ lat: e.latlng.lat, lng: e.latlng.lng }))
     map.on('mouseout', () => setCursor(null))
+
+    // auto-locate on open (silent): fly to the user's position if allowed
+    if (navigator.geolocation && window.isSecureContext) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          try { map.setView([pos.coords.latitude, pos.coords.longitude], 15) } catch { /* */ }
+        },
+        () => { /* stay on default view */ },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+      )
+    }
 
     mapRef.current = map
     return () => { map.remove(); mapRef.current = null }
@@ -227,8 +238,14 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
   const [locating, setLocating] = useState(false)
   const locateMarkerRef = useRef(null)
   const locateMe = () => {
-    if (!navigator.geolocation || !mapRef.current) {
+    if (!mapRef.current) return
+    if (!navigator.geolocation) {
       alert(t('gpsUnavailable')); return
+    }
+    // browsers block geolocation on non-secure origins (plain http over an IP).
+    // localhost is treated as secure; a LAN IP is not.
+    if (!window.isSecureContext) {
+      alert(t('gpsInsecure')); return
     }
     setLocating(true)
     navigator.geolocation.getCurrentPosition(
@@ -244,8 +261,15 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
         locateMarkerRef.current = grp
         setLocating(false)
       },
-      () => { setLocating(false); alert(t('gpsDenied')) },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      (err) => {
+        setLocating(false)
+        // 1 = permission denied, 2 = position unavailable, 3 = timeout
+        if (err.code === 1) alert(t('gpsDenied'))
+        else if (err.code === 2) alert(t('gpsPositionUnavailable'))
+        else if (err.code === 3) alert(t('gpsTimeout'))
+        else alert(t('gpsDenied'))
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     )
   }
 
@@ -295,7 +319,7 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
         <div className="coord-sys-switch">
           {COORD_SYSTEMS.map((sys) => (
             <button key={sys} className={sys === coordSys ? 'active' : ''} onClick={() => setCoordSys(sys)}>
-              {sys === 'wgs84' ? 'WGS84' : sys === 'dms' ? 'Lat/Long' : 'UTM'}
+              {sys === 'latlong' ? 'Lat/Long' : 'UTM (WGS84)'}
             </button>
           ))}
         </div>

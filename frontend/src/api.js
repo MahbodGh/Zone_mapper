@@ -79,6 +79,11 @@ export const api = {
     fetch(`${BASE}/zones/${id}`, { method: 'DELETE', headers: authHeaders() }).then(json),
 
   // ---- export ----
+  // ---- place search via backend proxy ----
+  geoSearch: (q, lang) =>
+    fetch(`${BASE}/zones/geosearch?q=${encodeURIComponent(q)}&lang=${lang}`,
+      { headers: authHeaders() }).then(json),
+
   // ---- reverse geocode (point -> admin divisions) ----
   reverseGeocode: (lon, lat) =>
     fetch(`${BASE}/zones/reverse-geocode`, {

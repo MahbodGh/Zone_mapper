@@ -51,16 +51,14 @@ function toDMS(deg, isLat) {
 }
 
 // Format a single [lat, lon] pair in the chosen system.
+// Two systems: 'latlong' (WGS84 decimal degrees) and 'utm' (UTM on WGS84).
 export function formatCoord(lat, lon, system) {
   if (system === 'utm') {
     const u = latLonToUTM(lat, lon)
     return `${u.zone}${u.band} ${Math.round(u.easting)}E ${Math.round(u.northing)}N`
   }
-  if (system === 'dms') {
-    return `${toDMS(lat, true)}, ${toDMS(lon, false)}`
-  }
-  // wgs84 decimal
+  // lat/long decimal degrees (WGS84)
   return `${lat.toFixed(6)}, ${lon.toFixed(6)}`
 }
 
-export const COORD_SYSTEMS = ['wgs84', 'dms', 'utm']
+export const COORD_SYSTEMS = ['latlong', 'utm']

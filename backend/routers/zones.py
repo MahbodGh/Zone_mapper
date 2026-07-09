@@ -145,3 +145,54 @@ def rev_geo(p: PointIn, user: User = Depends(get_current_user)):
     province/county/district/village from offline boundary data. All fields are
     editable by the user afterwards, so an empty result is fine."""
     return reverse_geocode(p.lon, p.lat)
+
+
+# ---------- place search proxy (bypasses browser-level blocks/ratelimits) ---
+import urllib.request
+import urllib.parse as _up
+
+@router.get("/geosearch")
+def geosearch(q: str, lang: str = "fa", user: User = Depends(get_current_user)):
+    """Server-side proxy to Nominatim so the search works regardless of the
+    client's network filtering or per-browser rate limits. Falls back to
+    Photon if Nominatim fails. Returns [{lat, lon, label}]."""
+    q = (q or "").strip()
+    if len(q) < 2:
+        return []
+
+    def _nominatim():
+        url = ("https://nominatim.openstreetmap.org/search?format=jsonv2"
+               f"&q={_up.quote(q)}&countrycodes=ir&limit=6&accept-language={lang}")
+        req = urllib.request.Request(url, headers={"User-Agent": "zone-mapper/1.0"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            import json as _json
+            data = _json.loads(r.read())
+        return [{"lat": float(d["lat"]), "lon": float(d["lon"]),
+                 "label": d.get("display_name", "")} for d in data]
+
+    def _photon():
+        url = ("https://photon.komoot.io/api/?q=" + _up.quote(q)
+               + f"&lang={lang}&lat=32.4&lon=53.6&limit=6")
+        req = urllib.request.Request(url, headers={"User-Agent": "zone-mapper/1.0"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            import json as _json
+            data = _json.loads(r.read())
+        out = []
+        for f in data.get("features", []):
+            p = f.get("properties", {})
+            lon, lat = f["geometry"]["coordinates"]
+            parts = [p.get(k) for k in ("name", "city", "county", "state", "country")]
+            label = "، ".join(dict.fromkeys([x for x in parts if x]))
+            out.append({"lat": lat, "lon": lon, "label": label})
+        return out
+
+    try:
+        res = _nominatim()
+        if res:
+            return res
+    except Exception:
+        pass
+    try:
+        return _photon()
+    except Exception:
+        return []
