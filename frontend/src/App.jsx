@@ -7,6 +7,7 @@ import UsersPanel from './components/UsersPanel.jsx'
 import LogsPanel from './components/LogsPanel.jsx'
 import AlertsPanel from './components/AlertsPanel.jsx'
 import PasswordModal from './components/PasswordModal.jsx'
+import InstallPrompt from './components/InstallPrompt.jsx'
 import AuthScreen from './components/AuthScreen.jsx'
 import LangSwitcher from './components/LangSwitcher.jsx'
 import { api } from './api.js'
@@ -206,6 +207,7 @@ export default function App() {
         />
       )}
       {toast && <div className="toast">{toast}</div>}
+      <InstallPrompt />
     </div>
   )
 }

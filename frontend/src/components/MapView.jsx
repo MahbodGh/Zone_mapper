@@ -3,6 +3,7 @@ import L from 'leaflet'
 import '@geoman-io/leaflet-geoman-free'
 import { useI18n } from '../context/I18nContext.jsx'
 import { formatCoord, COORD_SYSTEMS } from '../coords.js'
+import PlaceSearch from './PlaceSearch.jsx'
 
 // first exterior ring of a Polygon / first polygon of a MultiPolygon
 function extractRing(geometry) {
@@ -222,9 +223,54 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
   const fmtDist = (d) =>
     d >= 1000 ? `${(d / 1000).toFixed(2)} ${t('km')}` : `${Math.round(d)} ${t('m')}`
 
+  // ---- GPS: locate the user and fly there ----
+  const [locating, setLocating] = useState(false)
+  const locateMarkerRef = useRef(null)
+  const locateMe = () => {
+    if (!navigator.geolocation || !mapRef.current) {
+      alert(t('gpsUnavailable')); return
+    }
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords
+        const map = mapRef.current
+        map.flyTo([latitude, longitude], 16, { duration: 1 })
+        if (locateMarkerRef.current) locateMarkerRef.current.remove()
+        const grp = L.layerGroup().addTo(map)
+        L.circle([latitude, longitude], { radius: accuracy, color: '#1e88e5', weight: 1, fillOpacity: 0.12 }).addTo(grp)
+        L.circleMarker([latitude, longitude], { radius: 7, color: '#fff', weight: 2, fillColor: '#1e88e5', fillOpacity: 1 })
+          .addTo(grp).bindTooltip(t('youAreHere'), { permanent: false })
+        locateMarkerRef.current = grp
+        setLocating(false)
+      },
+      () => { setLocating(false); alert(t('gpsDenied')) },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    )
+  }
+
+  // ---- fly to a searched place ----
+  const goToPlace = ({ lat, lon }) => {
+    if (!mapRef.current) return
+    mapRef.current.flyTo([lat, lon], 14, { duration: 1 })
+    const grp = L.layerGroup().addTo(mapRef.current)
+    L.marker([lat, lon]).addTo(grp)
+    setTimeout(() => grp.remove(), 6000)
+  }
+
   return (
     <div className="map-container">
       <div ref={mapEl} className="map" />
+
+      {/* place search (Google-Maps style) */}
+      <div className="map-search">
+        <PlaceSearch onSelect={goToPlace} />
+      </div>
+
+      {/* GPS locate button */}
+      <button className={`gps-btn ${locating ? 'active' : ''}`} onClick={locateMe} title={t('myLocation')}>
+        {locating ? '◎' : '📍'}
+      </button>
 
       {/* compass / north indicator */}
       <div className="compass" title="North">
