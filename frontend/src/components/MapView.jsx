@@ -121,9 +121,11 @@ export default function MapView({ zones, canEdit, onDrawn, onGeometryEdited, onZ
       if (m.active) { m.active = false; setMeasuring(false) }
     })
 
-    // live cursor coordinates
+    // live cursor coordinates (desktop: follows the mouse)
     map.on('mousemove', (e) => setCursor({ lat: e.latlng.lat, lng: e.latlng.lng }))
     map.on('mouseout', () => setCursor(null))
+    // touch devices have no mousemove — show the coordinates of the last tap
+    map.on('click', (e) => setCursor({ lat: e.latlng.lat, lng: e.latlng.lng }))
 
     // auto-locate on open (silent): fly to the user's position if allowed
     if (navigator.geolocation && window.isSecureContext) {
