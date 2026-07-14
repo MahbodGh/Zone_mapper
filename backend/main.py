@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import init_db, SessionLocal
 from auth import ensure_superadmin
-from routers import auth_users, zones, export, alerts_logs
+from routers import auth_users, zones, export, alerts_logs, backup
 
 app = FastAPI(title="Zone Mapper API")
 
@@ -34,6 +34,10 @@ app.include_router(auth_users.router)
 app.include_router(zones.router)
 app.include_router(export.router)
 app.include_router(alerts_logs.router)
+app.include_router(backup.router)
+
+# daily automatic DB snapshots (kept in backend/backups/, last 7)
+backup.start_auto_backup()
 
 
 @app.get("/api/health")

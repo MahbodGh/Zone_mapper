@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../context/I18nContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../api.js'
@@ -84,6 +84,74 @@ export default function UsersPanel({ notify }) {
           onCreated={() => { setShowForm(false); load(); notify(t('userCreated')) }}
           notify={notify} />
       )}
+
+      {me?.role === 'superadmin' && <BackupSection t={t} notify={notify} />}
+    </div>
+  )
+}
+
+/* ---- database backup & restore (superadmin only) ---- */
+function BackupSection({ t, notify }) {
+  const [busy, setBusy] = useState(false)
+  const [backups, setBackups] = useState([])
+  const fileRef = useRef(null)
+
+  const loadList = () => api.listBackups().then(setBackups).catch(() => setBackups([]))
+  useEffect(() => { loadList() }, [])
+
+  const download = async () => {
+    setBusy(true)
+    try { await api.downloadBackup(); notify(t('backupDone')); loadList() }
+    catch (e) { notify(e.message) } finally { setBusy(false) }
+  }
+
+  const onRestoreFile = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-picking the same file
+    if (!file) return
+    if (!window.confirm(t('backupRestoreConfirm'))) return
+    setBusy(true)
+    try {
+      await api.restoreBackup(file)
+      notify(t('backupRestored'))
+      // data changed underneath the whole app -> full reload is the safe path
+      setTimeout(() => window.location.reload(), 1200)
+    } catch (err) { notify(err.message); setBusy(false) }
+  }
+
+  const fmtSize = (b) => b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.ceil(b / 1024)} KB`
+  const fmtDate = (iso) => { try { return new Date(iso).toLocaleString('fa-IR') } catch { return iso } }
+
+  return (
+    <div className="backup-section">
+      <h2 className="panel-title">{t('backupTitle')}</h2>
+      <p className="backup-note">{t('backupNote')}</p>
+
+      <div className="backup-actions">
+        <button className="btn primary sm" disabled={busy} onClick={download}>
+          ⬇ {busy ? t('building') : t('backupDownload')}
+        </button>
+        <button className="btn sm backup-restore-btn" disabled={busy}
+          onClick={() => fileRef.current?.click()}>
+          ⬆ {t('backupRestore')}
+        </button>
+        <input ref={fileRef} type="file" accept=".db,.sqlite,.sqlite3"
+          style={{ display: 'none' }} onChange={onRestoreFile} />
+      </div>
+
+      <h3 className="backup-sub">{t('serverBackups')}</h3>
+      {backups.length === 0 && <p className="backup-empty">{t('noBackups')}</p>}
+      <div className="backup-list">
+        {backups.map((b) => (
+          <div key={b.name} className="backup-row">
+            <span className="backup-kind">{b.kind === 'auto' ? '🕒' : '💾'}</span>
+            <div className="backup-info">
+              <strong>{b.name}</strong>
+              <small>{fmtDate(b.created_at)} · {fmtSize(b.size)}</small>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

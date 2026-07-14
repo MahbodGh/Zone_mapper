@@ -88,6 +88,19 @@ export const translations = {
     exportDone: 'فایل خروجی دانلود شد ✓', zoneSaved: 'ثبت شد ✓', zoneUpdated: 'به‌روزرسانی شد',
     borderUpdated: 'مرز زون به‌روزرسانی شد', userCreated: 'کاربر ایجاد شد ✓',
     km: 'کیلومتر', m: 'متر',
+    // GPS walk
+    walkStart: 'ترسیم با پیمایش', walkRecording: 'در حال ضبط مسیر', walkPausedLbl: 'مکث شده',
+    walkPause: 'مکث', walkResume: 'ادامه', walkFinish: 'پایان و ثبت', walkCancel: 'انصراف',
+    walkPoints: 'نقطه', walkHint: 'دور زمین راه بروید؛ مسیر شما به‌صورت خودکار ضبط می‌شود',
+    walkTooFew: 'نقاط کافی ضبط نشده (حداقل ۳ نقطه). کمی بیشتر در طول مرز زمین راه بروید',
+    // backup
+    backupTitle: 'پشتیبان‌گیری از داده‌ها',
+    backupNote: 'قبل از جابه‌جایی سرور، نسخه پشتیبان را دانلود کنید. سرور هم هر روز به‌صورت خودکار نسخه پشتیبان نگه می‌دارد (۷ نسخه آخر).',
+    backupDownload: 'دانلود نسخه پشتیبان', backupRestore: 'بازیابی از فایل',
+    backupRestoreConfirm: 'همه داده‌های فعلی (کاربران، زون‌ها، گزارش‌ها) با محتوای فایل پشتیبان جایگزین می‌شود. یک نسخه امن از وضعیت فعلی هم روی سرور ذخیره می‌شود. ادامه می‌دهید؟',
+    backupRestored: 'بازیابی انجام شد ✓ در حال نوسازی صفحه…',
+    backupDone: 'نسخه پشتیبان دانلود شد ✓',
+    serverBackups: 'پشتیبان‌های ذخیره‌شده روی سرور', noBackups: 'هنوز پشتیبانی ساخته نشده',
   },
   en: {
     appName: 'Zone Mapper',
@@ -163,6 +176,19 @@ export const translations = {
     exportDone: 'Export downloaded ✓', zoneSaved: 'saved ✓', zoneUpdated: 'updated',
     borderUpdated: 'Zone border updated', userCreated: 'User created ✓',
     km: 'km', m: 'm',
+    // GPS walk
+    walkStart: 'Draw by walking', walkRecording: 'Recording path', walkPausedLbl: 'Paused',
+    walkPause: 'Pause', walkResume: 'Resume', walkFinish: 'Finish & save', walkCancel: 'Cancel',
+    walkPoints: 'points', walkHint: 'Walk around the field; your path is recorded automatically',
+    walkTooFew: 'Not enough points yet (minimum 3). Walk a bit further along the field border',
+    // backup
+    backupTitle: 'Data backup',
+    backupNote: 'Download a backup before moving servers. The server also keeps an automatic daily snapshot (last 7).',
+    backupDownload: 'Download backup', backupRestore: 'Restore from file',
+    backupRestoreConfirm: 'ALL current data (users, zones, logs) will be replaced with the backup file. A safety copy of the current state is kept on the server. Continue?',
+    backupRestored: 'Restore complete ✓ Reloading…',
+    backupDone: 'Backup downloaded ✓',
+    serverBackups: 'Backups stored on the server', noBackups: 'No backups yet',
   },
   ar: {
     appName: 'راسم المناطق',
@@ -238,5 +264,18 @@ export const translations = {
     exportDone: 'تم تنزيل التصدير ✓', zoneSaved: 'تم الحفظ ✓', zoneUpdated: 'تم التحديث',
     borderUpdated: 'تم تحديث حدود المنطقة', userCreated: 'تم إنشاء المستخدم ✓',
     km: 'كم', m: 'م',
+    // GPS walk
+    walkStart: 'الرسم بالمشي', walkRecording: 'جارٍ تسجيل المسار', walkPausedLbl: 'متوقف مؤقتًا',
+    walkPause: 'إيقاف مؤقت', walkResume: 'متابعة', walkFinish: 'إنهاء وحفظ', walkCancel: 'إلغاء',
+    walkPoints: 'نقطة', walkHint: 'امشِ حول الأرض؛ يُسجَّل مسارك تلقائيًا',
+    walkTooFew: 'النقاط غير كافية بعد (٣ على الأقل). امشِ قليلًا على طول حدود الأرض',
+    // backup
+    backupTitle: 'النسخ الاحتياطي للبيانات',
+    backupNote: 'نزّل نسخة احتياطية قبل نقل الخادم. يحتفظ الخادم أيضًا بنسخة تلقائية يومية (آخر ٧ نسخ).',
+    backupDownload: 'تنزيل نسخة احتياطية', backupRestore: 'استعادة من ملف',
+    backupRestoreConfirm: 'سيتم استبدال كل البيانات الحالية (المستخدمون والمناطق والسجلات) بمحتوى ملف النسخة الاحتياطية. تُحفظ نسخة أمان من الوضع الحالي على الخادم. هل تريد المتابعة؟',
+    backupRestored: 'تمت الاستعادة ✓ جارٍ إعادة التحميل…',
+    backupDone: 'تم تنزيل النسخة الاحتياطية ✓',
+    serverBackups: 'النسخ المحفوظة على الخادم', noBackups: 'لا توجد نسخ احتياطية بعد',
   },
 }

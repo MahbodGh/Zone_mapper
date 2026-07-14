@@ -111,6 +111,33 @@ export const api = {
       body: JSON.stringify({ status }),
     }).then(json),
 
+  // ---- backup / restore (superadmin) ----
+  listBackups: () => fetch(`${BASE}/backup/list`, { headers: authHeaders() }).then(json),
+  restoreBackup: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return fetch(`${BASE}/backup/restore`, {
+      method: 'POST', headers: authHeaders(), body: fd,
+    }).then(json)
+  },
+  async downloadBackup() {
+    const res = await fetch(`${BASE}/backup/download`, { headers: authHeaders() })
+    if (!res.ok) {
+      let msg = `خطا در پشتیبان‌گیری (${res.status})`
+      try { const b = await res.json(); if (b.detail) msg = b.detail } catch { /* */ }
+      throw new Error(msg)
+    }
+    const blob = await res.blob()
+    const cd = res.headers.get('Content-Disposition') || ''
+    const m = cd.match(/filename="?([^";]+)"?/)
+    const filename = m ? m[1] : 'zone_mapper_backup.db'
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = filename
+    document.body.appendChild(a); a.click(); a.remove()
+    URL.revokeObjectURL(url)
+  },
+
   async exportZones(zoneIds, formats, mode = 'separate') {
     const res = await fetch(`${BASE}/export`, {
       method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
