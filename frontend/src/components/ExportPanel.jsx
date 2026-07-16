@@ -6,7 +6,7 @@ const FORMATS = [
   { id: 'kmz', label: 'KMZ', hint: 'KML' },
   { id: 'pdf', label: 'PDF', hint: 'PDF' },
   { id: 'dxf', label: 'DXF', hint: 'AutoCAD' },
-  { id: 'gdb', label: 'GDB', hint: 'ArcGIS' },
+  { id: 'gdb', label: 'GDB', hint: 'Garmin' },
   { id: 'gpx', label: 'GPX', hint: 'GPS' },
 ]
 

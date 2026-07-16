@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api", tags=["export"])
 EXPORTERS = {"kml": export_kml, "kmz": export_kmz, "gpx": export_gpx,
              "dxf": export_dxf, "pdf": export_pdf, "gdb": export_gdb}
 EXT = {"kml": "kml", "kmz": "kmz", "pdf": "pdf", "dxf": "dxf",
-       "gpx": "gpx", "gdb": "gdb.zip"}
+       "gpx": "gpx", "gdb": "gdb"}
 
 
 class ExportRequest(BaseModel):
